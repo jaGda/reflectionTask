@@ -6,10 +6,27 @@ final class Employee {
     final String lastName;
     final String position;
 
-    public Employee(Integer id, String firstName, String lastName, String position) {
+    Employee(Integer id, String firstName, String lastName, String position) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
         this.position = position;
+    }
+
+    Employee(Integer id) {
+        this.id = id;
+        this.firstName = "";
+        this.lastName = "";
+        this.position = "";
+    }
+
+    @Override
+    public String toString() {
+        return "Employee{" +
+                "id=" + id +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", position='" + position + '\'' +
+                '}';
     }
 }

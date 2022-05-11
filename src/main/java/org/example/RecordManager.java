@@ -6,10 +6,12 @@ import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Stream;
 
 class RecordManager {
-    Map<Class<?>, Map<Integer, Object>> records = new HashMap<>();
+    Map<Class<?>, HashMap<Integer, Object>> records = new HashMap<>();
 
     public RecordManager(List<String> files) {
         files.forEach(this::addRecords);
@@ -22,22 +24,52 @@ class RecordManager {
                     lines.map(record -> record.split(","))
                             .map(arr -> new Employee(Integer.valueOf(arr[0]), arr[1], arr[2], arr[3]))
                             .forEach(employee -> {
-                                if (records.containsKey(employee.getClass())){
-
+                                if (records.containsKey(employee.getClass())) {
+                                    records.get(employee.getClass()).computeIfAbsent(employee.id, i -> employee);
                                 } else {
-                                    records.put(employee.getClass(),)
+                                    HashMap<Integer, Object> employees = new HashMap<>();
+                                    employees.put(employee.id, employee);
+                                    records.put(employee.getClass(), employees);
                                 }
-                                records.computeIfAbsent(employee.getClass(), aClass ->
-                                        (Map<Integer, Object>) new HashMap<>().put(employee.id, employee));
-                                records.computeIfPresent(employee.getClass(), (aClass, map) ->
-                                        (Map<Integer, Object>) map.put(employee.id, employee));
                             });
                 } catch (IOException e) {
-                    throw new RuntimeException(e);
+                    Logger.getLogger(RecordManager.class.getName()).log(Level.SEVERE, e.getMessage());
                 }
-            } ;
-            case "project.csv" -> ;
-            case "task.csv" -> ;
+            }
+            case "project.csv" -> {
+                try (Stream<String> lines = Files.lines(Path.of("./" + s))) {
+                    lines.map(record -> record.split(","))
+                            .map(arr -> new Project(Integer.valueOf(arr[0]), arr[1]))
+                            .forEach(projecte -> {
+                                if (records.containsKey(projecte.getClass())) {
+                                    records.get(projecte.getClass()).computeIfAbsent(projecte.id, i -> projecte);
+                                } else {
+                                    HashMap<Integer, Object> projects = new HashMap<>();
+                                    projects.put(projecte.id, projecte);
+                                    records.put(projecte.getClass(), projects);
+                                }
+                            });
+                } catch (IOException e) {
+                    Logger.getLogger(RecordManager.class.getName()).log(Level.SEVERE, e.getMessage());
+                }
+            }
+            case "task.csv" -> {
+                try (Stream<String> lines = Files.lines(Path.of("./" + s))) {
+                    lines.map(record -> record.split(","))
+                            .map(arr -> new Task(Integer.valueOf(arr[0]), arr[1], Integer.valueOf(arr[2]), Integer.valueOf(arr[3])))
+                            .forEach(task -> {
+                                if (records.containsKey(task.getClass())) {
+                                    records.get(task.getClass()).computeIfAbsent(task.id, i -> task);
+                                } else {
+                                    HashMap<Integer, Object> tasks = new HashMap<>();
+                                    tasks.put(task.id, task);
+                                    records.put(task.getClass(), tasks);
+                                }
+                            });
+                } catch (IOException e) {
+                    Logger.getLogger(RecordManager.class.getName()).log(Level.SEVERE, e.getMessage());
+                }
+            }
         }
     }
 

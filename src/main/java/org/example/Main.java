@@ -1,12 +1,6 @@
 package org.example;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Stream;
 
 /**
  * Zadanie <ID zadania>:
@@ -18,7 +12,11 @@ public class Main {
     static List<String> files = List.of("employee.csv", "project.csv", "task.csv");
 
     public static void main(String[] args) {
-
+        RecordManager recordManager = new RecordManager(files);
+        recordManager.records.forEach((aClass, integerObjectHashMap) -> {
+            System.out.println(aClass + " :");
+            integerObjectHashMap.forEach((integer, o) -> System.out.println("    " + integer + o));
+        });
     }
 }
 
