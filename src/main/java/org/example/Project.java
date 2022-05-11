@@ -16,9 +16,13 @@ final class Project {
 
     @Override
     public String toString() {
-        return "Project{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                '}';
+        if (name.isEmpty()) {
+            return "Project{" + "id=" + id + '}';
+        } else {
+            return "Project{" +
+                    "id=" + id +
+                    ", name='" + name + '\'' +
+                    '}';
+        }
     }
 }

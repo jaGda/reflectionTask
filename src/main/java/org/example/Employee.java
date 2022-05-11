@@ -22,11 +22,15 @@ final class Employee {
 
     @Override
     public String toString() {
-        return "Employee{" +
-                "id=" + id +
-                ", firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", position='" + position + '\'' +
-                '}';
+        if (firstName.isEmpty()) {
+            return "Employee{" + "id=" + id + '}';
+        } else {
+            return "Employee{" +
+                    "id=" + id +
+                    ", firstName='" + firstName + '\'' +
+                    ", lastName='" + lastName + '\'' +
+                    ", position='" + position + '\'' +
+                    '}';
+        }
     }
 }

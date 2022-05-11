@@ -15,8 +15,11 @@ public class Main {
         RecordManager recordManager = new RecordManager(files);
         recordManager.records.forEach((aClass, integerObjectHashMap) -> {
             System.out.println(aClass + " :");
-            integerObjectHashMap.forEach((integer, o) -> System.out.println("    " + integer + o));
+            integerObjectHashMap.forEach((integer, o) -> System.out.println("    ID_" + integer + " = " + o));
         });
+        System.out.println("\nMethods find and list:");
+        System.out.println(recordManager.find(Employee.class, 4));
+        System.out.println(recordManager.list(Project.class));
     }
 }
 

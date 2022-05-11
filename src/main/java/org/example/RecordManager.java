@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 class RecordManager {
@@ -74,10 +75,12 @@ class RecordManager {
     }
 
     public <T> T find(Class<T> recordClass, Integer id) {
-        return null;
+        return (T) records.get(recordClass).entrySet().stream()
+                .filter(entry -> entry.getKey() == id)
+                .findFirst().orElse(null);
     }
 
     public <T> List<T> list(Class<T> recordClass) {
-        return null;
+        return (List<T>) records.get(recordClass).values().stream().collect(Collectors.toList());
     }
 }
