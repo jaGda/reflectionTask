@@ -1,8 +1,8 @@
 package org.example;
 
 final class Project {
-    final Integer id;
-    final String name;
+    Integer id;
+    String name;
 
     Project(Integer id, String name) {
         this.id = id;
@@ -12,6 +12,9 @@ final class Project {
     Project(Integer id) {
         this.id = id;
         name = "";
+    }
+
+    public Project() {
     }
 
     @Override
