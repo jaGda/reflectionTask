@@ -75,9 +75,7 @@ class RecordManager {
     }
 
     public <T> T find(Class<T> recordClass, Integer id) {
-        return (T) records.get(recordClass).entrySet().stream()
-                .filter(entry -> entry.getKey() == id)
-                .findFirst().orElse(null);
+        return (T) records.get(recordClass).get(id);
     }
 
     public <T> List<T> list(Class<T> recordClass) {

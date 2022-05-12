@@ -2,6 +2,7 @@ package org.example;
 
 import java.lang.reflect.Field;
 import java.util.List;
+import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -25,25 +26,21 @@ public class Main {
         recordManager.records.get(Task.class).forEach((key, value) -> {
             System.out.println("Zadanie " + key + ":");
             try {
-                Field project = value.getClass().getField("project");
-                System.out.println(project.getName());
-                Class<?> projectInstantiation = project.getClass();
-                Field projectId = projectInstantiation.getField("id");
-                int idVal = projectId.getInt(projectInstantiation);
-                System.out.println("    Projekt ID: " + idVal);
+                Field projectField = value.getClass().getDeclaredField("project");
+                Project project = (Project) projectField.get(value);
+                int projectId = project.id;
+                System.out.println("    Projekt ID: " + projectId);
 
-                Project project1 = recordManager.find(Project.class, idVal);
+                Project project1 = recordManager.find(Project.class, projectId);
                 System.out.println("    Nazwa projektu: " + project1.name);
 
-                Class<?> task = value.getClass();
-                String taskDescription = (String) task.getField("description").get(task);
-                System.out.println("    Opis zadania: " + taskDescription);
+                Task task = (Task) value;
+                System.out.println("    Opis zadania: " + task.description);
 
-                Field employee = value.getClass().getField("owner");
-                Class<?> employeeInstantiation = employee.getClass();
-                int employeeId = (int) employeeInstantiation.getField("id").get(employeeInstantiation);
+                Field employeeField = value.getClass().getDeclaredField("owner");
+                Employee employee = (Employee) employeeField.get(value);
 
-                Employee employee1 = recordManager.list(Employee.class).stream().filter(e -> e.id == employeeId).findFirst().get();
+                Employee employee1 = recordManager.list(Employee.class).stream().filter(e -> Objects.equals(e.id, employee.id)).findFirst().get();
                 System.out.println("    Właściciel: " + employee1.firstName + " " + employee1.lastName);
 
             } catch (NoSuchFieldException | IllegalAccessException e) {
