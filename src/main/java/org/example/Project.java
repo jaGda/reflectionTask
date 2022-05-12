@@ -4,12 +4,12 @@ final class Project {
     Integer id;
     String name;
 
-    Project(Integer id, String name) {
+    public Project(Integer id, String name) {
         this.id = id;
         this.name = name;
     }
 
-    Project(Integer id) {
+    public Project(Integer id) {
         this.id = id;
         name = "";
     }

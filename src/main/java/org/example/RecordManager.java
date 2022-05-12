@@ -26,41 +26,9 @@ class RecordManager {
     private void addRecords(String s) {
         Path of = Path.of("./" + s);
         switch (s) {
-            case "employee.csv" -> {
-                try (Stream<String> lines = Files.lines(of)) {
-                    lines.map(line -> line.split(","))
-                            .map(arr -> new Employee(Integer.valueOf(arr[0]), arr[1], arr[2], arr[3]))
-                            .forEach(employee -> {
-                                if (records.containsKey(employee.getClass())) {
-                                    records.get(employee.getClass()).computeIfAbsent(employee.id, i -> employee);
-                                } else {
-                                    HashMap<Integer, Object> employees = new HashMap<>();
-                                    employees.put(employee.id, employee);
-                                    records.put(employee.getClass(), employees);
-                                }
-                            });
-                } catch (IOException e) {
-                    Logger.getLogger(RecordManager.class.getName()).log(Level.SEVERE, e.getMessage());
-                }
-            }
+            case "employee.csv" -> readFromFile(Employee.class, of);
             case "project.csv" -> readFromFile(Project.class, of);
-            case "task.csv" -> {
-                try (Stream<String> lines = Files.lines(of)) {
-                    lines.map(line -> line.split(","))
-                            .map(arr -> new Task(Integer.valueOf(arr[0]), arr[1], Integer.valueOf(arr[2]), Integer.valueOf(arr[3])))
-                            .forEach(task -> {
-                                if (records.containsKey(task.getClass())) {
-                                    records.get(task.getClass()).computeIfAbsent(task.id, i -> task);
-                                } else {
-                                    HashMap<Integer, Object> tasks = new HashMap<>();
-                                    tasks.put(task.id, task);
-                                    records.put(task.getClass(), tasks);
-                                }
-                            });
-                } catch (IOException e) {
-                    Logger.getLogger(RecordManager.class.getName()).log(Level.SEVERE, e.getMessage());
-                }
-            }
+            case "task.csv" -> readFromFile(Task.class, of);
             default -> Logger.getLogger(RecordManager.class.getName()).log(Level.SEVERE, "Bad file name or type");
         }
     }
@@ -86,38 +54,50 @@ class RecordManager {
 
         try (Stream<String> lines = Files.lines(of)) {
             Field[] finalFields = fields;
-            T finalT = t;
+            Constructor<T> finalCons = cons;
             lines.map(line -> line.split(","))
                     .map(arr -> {
+                        T finalT = null;
+                        try {
+                            finalT = finalCons.newInstance();
+                        } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
+                            Logger.getLogger(RecordManager.class.getName()).log(Level.SEVERE, e.getMessage());
+                        }
+
                         for (int i = 0; i < arr.length; i++) {
-                            if (Pattern.compile("^\\d.+$").matcher(arr[i]).matches()) {
-                                try {
+                            try {
+                                if (finalFields[i].getType() == Employee.class) {
+                                    Constructor<?> constructor = Employee.class.getConstructor(Class.forName("java.lang.Integer"));
+                                    Employee employee = (Employee) constructor.newInstance(Integer.parseInt(arr[i]));
+                                    finalFields[i].set(finalT, employee);
+                                } else if (finalFields[i].getType() == Project.class) {
+                                    Constructor<?> constructor = Project.class.getConstructor(Class.forName("java.lang.Integer"));
+                                    Project project = (Project) constructor.newInstance(Integer.parseInt(arr[i]));
+                                    finalFields[i].set(finalT, project);
+                                } else if (Pattern.compile("^\\d+$").matcher(arr[i]).matches()) {
                                     finalFields[i].set(finalT, Integer.parseInt(arr[i]));
-                                } catch (IllegalAccessException e) {
-                                    Logger.getLogger(RecordManager.class.getName()).log(Level.SEVERE, e.getMessage());
-                                }
-                            } else {
-                                try {
+                                } else {
                                     finalFields[i].set(finalT, arr[i]);
-                                } catch (IllegalAccessException e) {
-                                    Logger.getLogger(RecordManager.class.getName()).log(Level.SEVERE, e.getMessage());
                                 }
+                            } catch (IllegalAccessException | NoSuchMethodException | InvocationTargetException |
+                                     InstantiationException | ClassNotFoundException e) {
+                                Logger.getLogger(RecordManager.class.getName()).log(Level.SEVERE, e.getMessage());
                             }
                         }
                         return finalT;
                     }).forEach(obj -> {
                         int id = 0;
                         try {
-                            id = (int) finalT.getClass().getDeclaredField("id").get(finalT);
+                            id = (int) obj.getClass().getDeclaredField("id").get(obj);
                         } catch (IllegalAccessException | NoSuchFieldException e) {
                             Logger.getLogger(RecordManager.class.getName()).log(Level.SEVERE, e.getMessage());
                         }
                         if (records.containsKey(obj.getClass())) {
                             records.get(obj.getClass()).computeIfAbsent(id, i -> obj);
                         } else {
-                            HashMap<Integer, Object> projects = new HashMap<>();
-                            projects.put(id, obj);
-                            records.put(obj.getClass(), projects);
+                            HashMap<Integer, Object> objects = new HashMap<>();
+                            objects.put(id, obj);
+                            records.put(obj.getClass(), objects);
                         }
                     });
         } catch (IOException e) {

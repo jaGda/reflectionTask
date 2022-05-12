@@ -1,23 +1,26 @@
 package org.example;
 
 final class Employee {
-    final Integer id;
-    final String firstName;
-    final String lastName;
-    final String position;
+    Integer id;
+    String firstName;
+    String lastName;
+    String position;
 
-    Employee(Integer id, String firstName, String lastName, String position) {
+    public Employee(Integer id, String firstName, String lastName, String position) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
         this.position = position;
     }
 
-    Employee(Integer id) {
+    public Employee(Integer id) {
         this.id = id;
         this.firstName = "";
         this.lastName = "";
         this.position = "";
+    }
+
+    public Employee() {
     }
 
     @Override
